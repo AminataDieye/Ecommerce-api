@@ -9,7 +9,6 @@ exports.create = (Collection, req, res) => {
       res.send(newEntry);
     }
   });
-
 }
 
 // Read many

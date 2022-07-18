@@ -1,9 +1,6 @@
-
-
-const User = require('../models/User')
-
 // Middleware to check user's token for protected routes
 const jwt = require('jsonwebtoken')
+const privateKey = require('../config/privateKey')
 exports.auth = (req, res, next) => {
 
     const headersAuthorization = req.headers.authorization
@@ -12,7 +9,7 @@ exports.auth = (req, res, next) => {
     }
     const token = req.headers.authorization.split(' ')[1];
 
-    jwt.verify(token, 'PRIVATE-KEY', (err, decodedToken) => {
+    jwt.verify(token, privateKey, (err, decodedToken) => {
         if (err) {
             return res.json("L'utilisateur ne peut pas acceder à cette ressource")
         }
@@ -29,8 +26,6 @@ exports.auth = (req, res, next) => {
     }
     )
 }
-
-
 
 // Middleware to check requesting user is admin or not
 exports.isAdmin = (req, res, next) => {

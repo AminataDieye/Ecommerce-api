@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
+const privateKey = require('../config/privateKey')
 const Schema = mongoose.Schema
 const userSchema = new Schema({
     username:
@@ -66,7 +67,7 @@ userSchema.methods.comparePassword = function (userPassword, cb) {
 
 //Generer un jeton pour l'utilisateur
 userSchema.methods.generateJWT = function () {
-    return jwt.sign({ userId: this._id, userRole: this.isAdmin }, 'PRIVATE-KEY', { expiresIn: '24H' })
+    return jwt.sign({ userId: this._id, userRole: this.isAdmin }, privateKey, { expiresIn: '24H' })
 };
 module.exports = mongoose.model('User', userSchema)
 
