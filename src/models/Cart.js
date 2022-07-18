@@ -1,41 +1,45 @@
 // model contenant tous les chariots achetés par un utilisateur
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const cartSchema = Schema(
-{
-    userId:
+const itemSchema = Schema(
     {
-        type: Schema.Types.ObjectId,
-        ref:'User',
-        required:true
-    },
-    products:
-    [{
-        productId:{
+        productId: {
             type: Schema.Types.ObjectId,
-            ref:'Product',
-            required:true
+            ref: 'Product',
+            required: true
         },
-        name:{
-            type:String,
-            required:false
+        name: {
+            type: String,
+            required: false
         },
-        quantity:{
-            type:Number,
-            required:true,
-            price:Number
+        quantity: {
+            type: Number,
+            required: true,
+            price: Number
+        },
+        subTotal: {
+            type: Number
         }
-        // ,
-        // bill:{
-            
-        // }
-
-     }],
-    created_date:
-    {
-         type: Date,
-         default: Date.now
     }
-})
+)
+const cartSchema = Schema(
+    {
+        userId:
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        products:
+            [itemSchema],
+        totalPrice: {
+            type: Number,
+        },
+        created_date:
+        {
+            type: Date,
+            default: Date.now
+        }
+    })
 
-module.exports=mongoose.model('Cart', cartSchema)
+module.exports = mongoose.model('Cart', cartSchema)

@@ -1,100 +1,90 @@
-const mongoose = require ('mongoose')
+const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const productDetailsSchema= new Schema(
-    { 
+const productDetailsSchema = new Schema(
+    {
         color:
         {
-            type:String,
+            type: String,
         },
         size:
         {
-            type:String
+            type: String
         },
-        picture :
+        picture:
         {
-            type:String
+            type: String
         },
         stock:
         {
-            type:Number,
+            type: Number,
         },
-        price :
+        price:
         {
-            type:Number,
+            type: Number,
         }
     }
 )
 
 
-module.exports = mongoose.model('ProductDetails', productDetailsSchema) 
+module.exports = mongoose.model('ProductDetails', productDetailsSchema)
 
 
-const productSchema= new Schema(
+const productSchema = new Schema(
     {
         name:
         {
-            type:String,
-            required:true
+            type: String,
+            required: true
         },
         price:
         {
-            type:Number,
-            required:true
+            type: Number,
+            required: true
         },
         picture:
         {
-            type:String,
-            required:false
-        },
-        category:
-        [
-            {
-                type: Schema.Types.ObjectId,
-                ref:'Category',
-                required:true
-            }
-        ],
-        description :
-        {
-            type:String,
-            required:false
-        },
-        quantity :
-        {
-            type:Number,
+            type: String,
             required: false
         },
-        details :
-        [
-           productDetailsSchema 
-        ],
+        category:
+            [
+                {
+                    type: Schema.Types.ObjectId,
+                    ref: 'Category',
+                    required: true
+                }
+            ],
+        description:
+        {
+            type: String,
+            required: false
+        },
+        quantity:
+        {
+            type: Number,
+            required: false
+        },
+        details:
+            [
+                productDetailsSchema
+            ],
         // creer une valeur qui n'aura pas d'entrée
-       created_date:
-      {
-        type: Date,
-        default: Date.now
-      },
+        created_date:
+        {
+            type: Date,
+            default: Date.now
+        },
 
-   
+
 
     }
 )
 
 
-module.exports = mongoose.model('Product', productSchema) 
+module.exports = mongoose.model('Product', productSchema)
 
-// nom
-// prix
-// description
-//images
-//stock
 
-//color
-//stock
-//size
-//images
-//price
 
 
 
