@@ -1,5 +1,5 @@
 const Cart = require('../models/Cart')
-const { readOne, create } = require('../queries/crud')
+const { readOne, create } = require('../queries/CRUD')
 
 
 // add Product to Cart

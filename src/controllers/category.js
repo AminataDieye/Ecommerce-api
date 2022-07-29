@@ -1,6 +1,6 @@
 const Category = require('../models/Category')
 const Product = require('../models/Product')
-const { create, readMany, readOne } = require('../queries/crud')
+const { create, readMany, readOne } = require('../queries/CRUD')
 const mongoose = require('mongoose')
 
 //add Category

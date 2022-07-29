@@ -1,36 +1,23 @@
 // Create
 exports.create = (Collection, req, res) => {
   newEntry = new Collection(req.body)
-  newEntry.save(newEntry, (e, newEntry) => {
-    if (e) {
-      console.log(e);
-      res.sendStatus(500);
-    } else {
-      res.send(newEntry);
-    }
-  });
+  newEntry.save()
+    .then(newEntry => { res.status(200).json(newEntry) })
+    .catch(err => { res.status(500).json(err) })
 }
 
 // Read many
 exports.readMany = (Collection, req, res) => {
-  let query = res.locals.query || {};
-
-  Collection.find(query, (e, result) => {
-    if (e) {
-      res.status(500).send(e);
-      console.log(e.message);
-    } else {
-      res.send(result);
-    }
-  });
+  Collection.find()
+    .then(result => { res.status(200).json(result) })
+    .catch(error => { res.status(500).json(error) })
 };
 
 // Read one
 exports.readOne = (Collection, req, res) => {
   Collection.findById(req.params.id, (e, result) => {
-    if (e) {
-      res.status(500).send(e);
-      console.log(e.message);
+    if (error) {
+      res.status(500).json(error);
     } else {
       res.send(result);
     }

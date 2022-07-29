@@ -32,7 +32,8 @@ const cartSchema = Schema(
         },
         products:
             [itemSchema],
-        totalPrice: {
+        totalPrice:
+        {
             type: Number,
         },
         created_date:

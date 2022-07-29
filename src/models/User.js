@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const privateKey = require('../config/privateKey')
 const Schema = mongoose.Schema
+
 const userSchema = new Schema({
     username:
     {
@@ -14,21 +15,22 @@ const userSchema = new Schema({
         type: String,
         required: true,
         index: { unique: true }
-
     },
     password:
     {
         type: String,
-        required: true
+        required: true,
     },
     isAdmin:
     {
         type: Boolean,
         required: true,
         default: false
-    }
-    ,
-
+    },
+    token:
+    {
+        type: String
+    },
     created_date:
     {
         type: Date,
@@ -36,18 +38,15 @@ const userSchema = new Schema({
     }
 })
 
-
+// hash the password by Bcrypt before saving the user
 userSchema.pre('save', function (next) {
     var user = this;
-
-    // hache le mot de passe que s'il a été modifié ou est nouveau
+    // hashes the password only if it has been changed or is new
     if (!user.isModified('password')) return next();
-
-    // generer un salt
+    // generate a salt
     bcrypt.genSalt(10, function (err, salt) {
         if (err) return next(err);
-
-        // utiliser le nouveau salt pour hacher le mot de passe
+        // use the new salt to hash the password
         bcrypt.hash(user.password, salt, function (err, hash) {
             if (err) return next(err);
             user.password = hash;
@@ -56,7 +55,7 @@ userSchema.pre('save', function (next) {
     });
 });
 
-//comparer password
+//compare password
 userSchema.methods.comparePassword = function (userPassword, cb) {
     bcrypt.compare(userPassword, this.password, function (err, isMatch) {
         if (err) return cb(err);
@@ -65,10 +64,37 @@ userSchema.methods.comparePassword = function (userPassword, cb) {
 };
 
 
-//Generer un jeton pour l'utilisateur
-userSchema.methods.generateJWT = function () {
-    return jwt.sign({ userId: this._id, userRole: this.isAdmin }, privateKey, { expiresIn: '24H' })
+// generate token for user
+userSchema.methods.generateToken = function (cb) {
+    var user = this;
+    var token = jwt.sign({
+        userId: user._id,
+        userRole: user.isAdmin
+    }, privateKey, { expiresIn: '24h' })
+
+    // add the generater token to the current user
+    user.token = token;
+    user.save(function (err, user) {
+        if (err) return cb(err);
+        cb(null, user);
+    })
+}
+
+// find token by user
+userSchema.statics.findUserToken = function (token, cb) {
+    var user = this;
+    jwt.verify(token, privateKey, function (err, decode) {
+        if (err) cb(null)
+        else {
+            user.findOne({ "_id": decode.userId, "token": token }, function (err, user) {
+                if (err) return cb(err);
+                cb(null, user);
+            })
+        }
+    })
 };
+
+
 module.exports = mongoose.model('User', userSchema)
 
 
