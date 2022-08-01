@@ -3,7 +3,17 @@ exports.create = (Collection, req, res) => {
   newEntry = new Collection(req.body)
   newEntry.save()
     .then(newEntry => { res.status(200).json(newEntry) })
-    .catch(err => { res.status(500).json(err) })
+    .catch(error => {
+      let errors = {};
+      if (error.code === 11000)
+        errors = Object.keys(error.keyValue)[0] + ' existe déja'
+      else {
+        Object.keys(error.errors).forEach((key) => {
+          errors[key] = error.errors[key].message;
+        });
+      }
+      res.status(500).json(errors)
+    })
 }
 
 // Read many

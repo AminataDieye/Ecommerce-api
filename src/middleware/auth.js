@@ -1,6 +1,4 @@
 // Middleware to check user's token for protected routes
-const jwt = require('jsonwebtoken')
-const privateKey = require('../config/privateKey')
 const User = require("../models/User")
 // Middleware to verify user authentication
 exports.auth = (req, res, next) => {

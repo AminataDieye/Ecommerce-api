@@ -5,7 +5,8 @@ const categorySchema = Schema(
         name:
         {
             type: String,
-            required: true,
+            required: [true, 'Le champ nom est requis'],
+
         },
         // creer une valeur qui n'aura pas d'entrée
         created_date:

@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
-const privateKey = require('../config/privateKey')
+require('dotenv').config();
+const privateKey = process.env.PRIVATE_KEY
 const Schema = mongoose.Schema
 
 const userSchema = new Schema({
@@ -13,13 +14,16 @@ const userSchema = new Schema({
     email:
     {
         type: String,
-        required: true,
-        index: { unique: true }
+        required: [true, 'Le champ email est requis'],
+        index: { unique: true },
+        match: [/^.+@.+\..+/, "Veuillez entrer une adresse e-mail valide"],
     },
     password:
     {
         type: String,
-        required: true,
+        required: [true, 'Le champ password est requis'],
+        minlength: [5, 'Le mot de passe doit être au moins 5 caractères'],
+
     },
     isAdmin:
     {

@@ -35,12 +35,14 @@ const productSchema = new Schema(
         name:
         {
             type: String,
-            required: true
+            required: [true, 'Le champ nom est requis'],
         },
         price:
         {
             type: Number,
-            required: true
+            required: [true, 'Le champ prix est requis'],
+            // min: [0, 'Le prix ne doit pas être negatif'],
+
         },
         picture:
         {
@@ -69,7 +71,6 @@ const productSchema = new Schema(
             [
                 productDetailsSchema
             ],
-        // creer une valeur qui n'aura pas d'entrée
         created_date:
         {
             type: Date,

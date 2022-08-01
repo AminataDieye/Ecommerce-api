@@ -1,5 +1,5 @@
 const { addCategory, allCategory, oneCategory } = require('../../controllers/category')
-const { isAdmin, auth } = require('../../auth/auth')
+const { isAdmin, auth } = require('../../middleware/auth')
 
 const express = require('express')
 const router = express.Router()

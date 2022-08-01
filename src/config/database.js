@@ -1,7 +1,10 @@
 const mongoose = require('mongoose')
+require('dotenv').config();
+
 //Connect and configure database mongodb cloud
 const initDb = () => {
-    mongoose.connect('mongodb+srv://admin:Enter123@cluster0.kirox.mongodb.net/?retryWrites=true&w=majority',
+    uri = process.env.MONGO_URI
+    mongoose.connect(uri,
         { useNewUrlParser: true, useUnifiedTopology: true }
     )
         .then(_ => { console.log("Base de données bien connectée") })

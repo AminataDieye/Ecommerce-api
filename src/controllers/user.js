@@ -1,6 +1,7 @@
 const User = require("../models/User")
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const nodemailer = require('../config/nodemailer')
 
 const { create, update, remove, readMany, readOne } = require('../queries/CRUD')
 exports.register = (req, res) => {
