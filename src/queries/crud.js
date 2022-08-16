@@ -4,17 +4,23 @@ exports.create = (Collection, req, res) => {
   newEntry.save()
     .then(newEntry => { res.status(200).json(newEntry) })
     .catch(error => {
-      let errors = {};
-      if (error.code === 11000)
-        errors = Object.keys(error.keyValue)[0] + ' existe déja'
-      else {
-        Object.keys(error.errors).forEach((key) => {
-          errors[key] = error.errors[key].message;
-        });
-      }
-      res.status(500).json(errors)
+      // const errors = this.getErrors(error)
+      res.status(500).json(this.getErrors(error))
     })
 }
+exports.getErrors = (error) => {
+  let errors = {};
+  if (error.code === 11000)
+    errors = Object.keys(error.keyValue)[0] + ' existe déja'
+  else {
+    Object.keys(error.errors).forEach((key) => {
+      errors[key] = error.errors[key].message;
+    });
+  }
+  return errors
+
+}
+
 
 // Read many
 exports.readMany = (Collection, req, res) => {

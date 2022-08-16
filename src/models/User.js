@@ -35,6 +35,10 @@ const userSchema = new Schema({
     {
         type: String
     },
+    verified: {
+        type: Boolean,
+        default: false,
+    },
     created_date:
     {
         type: Date,
@@ -69,19 +73,18 @@ userSchema.methods.comparePassword = function (userPassword, cb) {
 
 
 // generate token for user
-userSchema.methods.generateToken = function (cb) {
+userSchema.methods.generateToken = function (dateExpired) {
     var user = this;
     var token = jwt.sign({
-        userId: user._id,
-        userRole: user.isAdmin
-    }, privateKey, { expiresIn: '24h' })
-
+        userId: user._id
+    }, privateKey, { expiresIn: dateExpired })
     // add the generater token to the current user
-    user.token = token;
-    user.save(function (err, user) {
-        if (err) return cb(err);
-        cb(null, user);
-    })
+    // user.token = token;
+    // user.save(function (err, user) {
+    //     if (err) return cb(err);
+    //     cb(null, user);
+    // })
+    return token
 }
 
 // find token by user
@@ -97,7 +100,6 @@ userSchema.statics.findUserToken = function (token, cb) {
         }
     })
 };
-
 
 module.exports = mongoose.model('User', userSchema)
 

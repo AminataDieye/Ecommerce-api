@@ -1,12 +1,23 @@
 const User = require("../models/User")
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
 const nodemailer = require('../config/nodemailer')
+const jwt = require('jsonwebtoken')
+require('dotenv').config();
+const privateKey = process.env.PRIVATE_KEY
+const { update, remove, readMany, getErrors } = require('../queries/CRUD')
 
-const { create, update, remove, readMany, readOne } = require('../queries/CRUD')
 exports.register = (req, res) => {
-  create(User, req, res)
+  newEntry = new User(req.body)
+  newEntry.save()
+    .then(newEntry => {
+      const token = newEntry.generateToken('2h')
+      nodemailer.sendEmailUser(req.body.email, req.body.username, token)
+      res.status(200).json({ userInfos: newEntry, message: 'Check your account' })
+    })
+    .catch(error => {
+      res.status(500).json(getErrors(error))
+    })
 }
+
 exports.login = (req, res, next) => {
   // get the token and check if the user is logged in or not
   let token = req.cookies.auth;
@@ -19,13 +30,18 @@ exports.login = (req, res, next) => {
       User.findOne({ email: req.body.email })
         .then(user => {
           if (!user) { return res.status(400).json("Utilisateur introuvable") }
+          // check if the user has confirmed email
+          if (!user.verified) { return res.status(400).json("Merci de confirmer votre compte") }
+
           // check a matching password
           user.comparePassword(req.body.password, function (err, isMatch) {
             if (err) throw err;
             if (!isMatch) return res.status(400).json("Mot de passe incorrect")
             if (isMatch) {
-              // generate a token if the password are valid 
-              user.generateToken((err, user) => {
+              // generate and add a token to the logged in user
+              const token = user.generateToken('24h')
+              user.token = token
+              user.save((err, user) => {
                 if (err) return res.status(400).send(err);
                 if (user) {
                   //define a cookie with the token value
@@ -36,6 +52,7 @@ exports.login = (req, res, next) => {
                   });
                 }
               });
+
             }
           });
         })
@@ -43,6 +60,7 @@ exports.login = (req, res, next) => {
     }
   })
 }
+
 exports.updateUser = (req, res) => {
   update(User, req, res)
 }
@@ -61,11 +79,8 @@ exports.allUsers = (req, res) => {
 exports.oneUser = (req, res) => {
   return res.json({
     email: req.user.email,
-    username: req.user.username,
-
+    username: req.user.username
   })
-
-
 }
 //logout user
 exports.logout = (req, res) => {
@@ -74,5 +89,25 @@ exports.logout = (req, res) => {
     if (user) res.status(200).send("Deconnexion avec succes");
 
   })
+}
+
+//verify user
+exports.verifyUser = (req, res) => {
+  const token = req.params.token
+  jwt.verify(token, privateKey, function (err, decode) {
+    if (err) return res.send({ message: "Echec confirmation compte" });
+    if (decode) {
+      User.findOne({ _id: decode.userId }, function (err, user) {
+        if (user) {
+          user.verified = true
+          user.save()
+          return res.status(200).json({ message: "Merci. Vous avez confirmé votre inscription" })
+        }
+        if (err) return res.status(400).json({ message: "Echec confirmation compte" });
+      })
+
+    }
+  }
+  )
 }
 
