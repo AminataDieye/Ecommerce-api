@@ -7,7 +7,7 @@ exports.auth = (req, res, next) => {
         if (err) return res.status(400).json({
             message: "L'utilisateur ne peut pas acceder à cette ressource"
         })
-        if (!user) return res.status(400).json({
+        if (!user) return res.status(401).json({
             message: "Veuillez d'abord vous connecter"
         })
         req.token = token;
@@ -20,7 +20,7 @@ exports.auth = (req, res, next) => {
 // Middleware to check requesting user is admin or not
 exports.isAdmin = (req, res, next) => {
     if (!req.user.isAdmin) {
-        return res.json("Seul l'admin a accés à cette ressource")
+        return res.status(403).json({ message: "Non autorisé! Seul l'admin a accés à cette ressource" })
     }
     else {
         next()

@@ -17,6 +17,10 @@ app.use(morgan('dev'))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use('/', routes)
+//Gestion des erreurs 404
+app.use(({ res }) => {
+    res.status(404).json({ message: "Cette page n'existe pas" })
+})
 initDb()
 
 

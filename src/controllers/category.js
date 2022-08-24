@@ -15,17 +15,16 @@ exports.allCategory = (req, res) => {
 
 //get category by ID
 exports.oneCategory = (req, res, next) => {
-  console.log(req.params.id)
   Category.findOne({ _id: req.params.id })
     .then(category => {
       Product.find({ category: category.id }, { name: 1 })
         .then(products => {
           {
             const number = products.length
-            return res.json({ number, products, category })
+            return res.status(200).json({ number, category, products })
           }
         })
-        .catch(err => { return res.json(err) })
+        .catch(err => { return res.status(500).json(err) })
     }
     )
     .catch(err => { res.json(err) })

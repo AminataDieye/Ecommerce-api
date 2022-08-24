@@ -4,16 +4,14 @@ const { readOne, create } = require('../queries/CRUD')
 
 // add Product to Cart
 exports.createCart = (req, res) => {
-  const userId = req.body.userId
   //Check if cart exist
-  Cart.findOne({ userId })
+  Cart.findOne({ userId: req.body.userId })
     .then(cart => {
       //Cart exist
       if (cart) {
         // Check if product exist in a cart
         req.body.products.forEach(element => {
           let indexProduct = cart.products.findIndex(elem => elem.productId == element.productId)
-          console.log(indexProduct)
           //product exist
           if (indexProduct !== -1) {
             if (element.quantity <= 0) {
@@ -34,10 +32,8 @@ exports.createCart = (req, res) => {
         });
         cart.totalPrice = cart.products.map(item => item.subTotal).reduce((acc, nextElem) => acc + nextElem, 0);
 
-        console.log("totalprice", cart.totalPrice)
-        console.log(cart)
         cart.save()
-          .then(cart => { res.send(cart) })
+          .then(cart => { res.status(201).json(cart) })
       }
       //cart not exist
       else {
@@ -48,11 +44,10 @@ exports.createCart = (req, res) => {
         });
 
         req.body.totalPrice = totalPrice
-        console.log(req.body)
         create(Cart, req, res)
       }
     })
-    .catch(err => { console.log(err) })
+    .catch(err => { res.status(500).json(err) })
 }
 
 //read one cart
